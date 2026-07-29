@@ -4,11 +4,11 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import dev.torrent.api.domain.Job;
-import dev.torrent.api.domain.JobPriority;
-import dev.torrent.api.domain.JobStatus;
+import dev.torrent.common.domain.Job;
+import dev.torrent.common.domain.JobPriority;
+import dev.torrent.common.domain.JobStatus;
 import dev.torrent.api.dto.JobRequestDto;
-import dev.torrent.api.repository.JobRepository;
+import dev.torrent.common.repository.JobRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

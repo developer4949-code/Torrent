@@ -1,11 +1,11 @@
 package dev.torrent.api.integration;
 
-import dev.torrent.api.domain.JobPriority;
+import dev.torrent.common.domain.JobPriority;
 import dev.torrent.api.dto.JobRequestDto;
 import dev.torrent.api.dto.JobResponseDto;
 import dev.torrent.api.dto.RetryPolicyDto;
 import dev.torrent.api.dto.ScheduleDto;
-import dev.torrent.api.repository.JobRepository;
+import dev.torrent.common.repository.JobRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;

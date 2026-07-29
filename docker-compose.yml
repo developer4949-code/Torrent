@@ -13,3 +13,9 @@ services:
 
 volumes:
   postgres_data:
+
+  redis:
+    image: redis:7-alpine
+    container_name: torrent-redis
+    ports:
+      - "6379:6379"

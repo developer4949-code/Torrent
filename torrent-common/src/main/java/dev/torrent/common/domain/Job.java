@@ -1,4 +1,4 @@
-package dev.torrent.api.domain;
+package dev.torrent.common.domain;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;

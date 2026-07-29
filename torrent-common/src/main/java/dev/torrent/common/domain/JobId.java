@@ -1,4 +1,4 @@
-package dev.torrent.api.domain;
+package dev.torrent.common.domain;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;

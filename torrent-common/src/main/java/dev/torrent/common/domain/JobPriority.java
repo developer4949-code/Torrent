@@ -1,4 +1,4 @@
-package dev.torrent.api.domain;
+package dev.torrent.common.domain;
 
 public enum JobPriority {
     LOW, STANDARD, HIGH

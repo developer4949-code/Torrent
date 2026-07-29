@@ -1,7 +1,7 @@
 package dev.torrent.api.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.torrent.api.domain.JobPriority;
+import dev.torrent.common.domain.JobPriority;
 import dev.torrent.api.validation.ValidCron;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
