@@ -48,6 +48,12 @@ public class JobService {
             if (request.retryPolicy().maxAttempts() != null) {
                 job.setMaxAttempts(request.retryPolicy().maxAttempts());
             }
+            if (request.retryPolicy().backoffMultiplier() != null) {
+                job.setBackoffMultiplier(request.retryPolicy().backoffMultiplier());
+            }
+            if (request.retryPolicy().maxBackoffSeconds() != null) {
+                job.setMaxBackoffSeconds(request.retryPolicy().maxBackoffSeconds());
+            }
         }
         if (request.timeoutSeconds() != null) {
             job.setTimeoutSeconds(request.timeoutSeconds());

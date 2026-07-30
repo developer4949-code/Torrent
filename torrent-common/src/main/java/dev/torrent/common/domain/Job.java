@@ -55,6 +55,12 @@ public class Job {
     @Column(name = "max_attempts", nullable = false)
     private Integer maxAttempts = 3;
 
+    @Column(name = "backoff_multiplier", nullable = false)
+    private Double backoffMultiplier = 2.0;
+
+    @Column(name = "max_backoff_seconds", nullable = false)
+    private Integer maxBackoffSeconds = 300;
+
     @Column(name = "next_retry_at")
     private OffsetDateTime nextRetryAt;
 
@@ -131,6 +137,12 @@ public class Job {
 
     public Integer getMaxAttempts() { return maxAttempts; }
     public void setMaxAttempts(Integer maxAttempts) { this.maxAttempts = maxAttempts; }
+
+    public Double getBackoffMultiplier() { return backoffMultiplier; }
+    public void setBackoffMultiplier(Double backoffMultiplier) { this.backoffMultiplier = backoffMultiplier; }
+
+    public Integer getMaxBackoffSeconds() { return maxBackoffSeconds; }
+    public void setMaxBackoffSeconds(Integer maxBackoffSeconds) { this.maxBackoffSeconds = maxBackoffSeconds; }
 
     public OffsetDateTime getNextRetryAt() { return nextRetryAt; }
     public void setNextRetryAt(OffsetDateTime nextRetryAt) { this.nextRetryAt = nextRetryAt; }

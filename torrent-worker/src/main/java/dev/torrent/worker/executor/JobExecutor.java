@@ -29,6 +29,9 @@ public class JobExecutor {
             try {
                 // Simulate job execution
                 Thread.sleep(500);
+                if ("FAILING_JOB".equals(job.getJobType())) {
+                    throw new RuntimeException("Simulated job failure");
+                }
                 
                 // Job completed
                 Job current = jobRepository.findById(job.getId()).orElse(job);
@@ -38,9 +41,19 @@ public class JobExecutor {
             } catch (Exception e) {
                 // Job failed
                 Job current = jobRepository.findById(job.getId()).orElse(job);
-                current.setStatus(JobStatus.FAILED);
-                current.setCompletedAt(OffsetDateTime.now());
-                current.setErrorMessage(e.getMessage());
+                
+                if (current.getAttemptCount() < current.getMaxAttempts()) {
+                    long delaySeconds = (long) (5 * Math.pow(current.getBackoffMultiplier(), current.getAttemptCount() - 1));
+                    delaySeconds = Math.min(delaySeconds, current.getMaxBackoffSeconds());
+                    
+                    current.setStatus(JobStatus.SCHEDULED);
+                    current.setScheduledAt(OffsetDateTime.now().plusSeconds(delaySeconds));
+                    current.setErrorMessage(e.getMessage());
+                } else {
+                    current.setStatus(JobStatus.DEAD);
+                    current.setCompletedAt(OffsetDateTime.now());
+                    current.setErrorMessage(e.getMessage());
+                }
                 jobRepository.save(current);
             }
         });

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 public interface JobRepository extends JpaRepository<Job, JobId> {
     Optional<Job> findByIdempotencyKey(String idempotencyKey);
     Optional<Job> findById(UUID id);
+    List<Job> findByStatus(dev.torrent.common.domain.JobStatus status);
 
     @Query(value = """
         SELECT * FROM jobs
