@@ -65,7 +65,7 @@ public class ConcurrentWorkerIT {
         job.setJobType("TEST_JOB");
         job.setPayload("{}");
         job.setScheduledAt(OffsetDateTime.now().minusMinutes(1)); // due immediately
-        job.setStatus(JobStatus.PENDING);
+        job.setStatus(JobStatus.SCHEDULED);
         job.setPriority(JobPriority.STANDARD);
         jobRepository.save(job);
 

@@ -60,7 +60,7 @@ public class RetrySchedulerIT {
         job.setJobType("FAILING_JOB");
         job.setPayload("{}");
         job.setScheduledAt(OffsetDateTime.now().minusMinutes(1));
-        job.setStatus(JobStatus.PENDING);
+        job.setStatus(JobStatus.SCHEDULED);
         job.setPriority(JobPriority.STANDARD);
         job.setMaxAttempts(3);
         jobRepository.save(job);
