@@ -22,6 +22,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class JobService {
@@ -99,6 +100,10 @@ public class JobService {
         return executionTime.nextExecution(now)
                 .orElse(now)
                 .toOffsetDateTime();
+    }
+
+    public List<Job> getRecentJobs() {
+        return jobRepository.findTop50ByOrderByScheduledAtDesc();
     }
 
     public record SubmissionResult(Job job, boolean isDuplicate) {}

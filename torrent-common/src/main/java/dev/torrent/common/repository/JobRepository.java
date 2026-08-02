@@ -17,6 +17,7 @@ public interface JobRepository extends JpaRepository<Job, JobId> {
     Optional<Job> findByIdempotencyKey(String idempotencyKey);
     Optional<Job> findById(UUID id);
     List<Job> findByStatus(dev.torrent.common.domain.JobStatus status);
+    List<Job> findTop50ByOrderByScheduledAtDesc();
 
     @Query(value = """
         SELECT * FROM jobs
