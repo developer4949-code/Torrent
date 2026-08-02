@@ -8,6 +8,10 @@ function App() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stagedJobs, setStagedJobs] = useState([]);
+  
+  // Real-time animation pulses
+  const [grpcPulse, setGrpcPulse] = useState(false);
+  const [lastJobsRef, setLastJobsRef] = useState([]);
 
   // Custom Form State
   const [customJob, setCustomJob] = useState({
@@ -36,6 +40,19 @@ function App() {
     const interval = setInterval(fetchJobs, 1000); // Poll every second
     return () => clearInterval(interval);
   }, []);
+
+  // Detect new gRPC jobs and pulse the UI for 1.5 seconds
+  useEffect(() => {
+    if (lastJobsRef.length > 0 && jobs.length > 0) {
+      const newHighJobs = jobs.filter(j => j.priority === 'HIGH' && !lastJobsRef.some(old => old.id === j.id));
+      if (newHighJobs.length > 0) {
+        setGrpcPulse(true);
+        const t = setTimeout(() => setGrpcPulse(false), 1500);
+        return () => clearTimeout(t);
+      }
+    }
+    setLastJobsRef(jobs);
+  }, [jobs]);
 
   // Scroll Animation Observer
   useEffect(() => {
@@ -117,17 +134,21 @@ function App() {
     const recentActivity = jobs.some(j => j.status === 'PENDING' || j.status === 'SCHEDULED');
 
     return {
-      apiGateway: recentActivity,
+      apiGateway: recentActivity || grpcPulse,
       kafka: hasPendingStandard || hasScheduled,
-      grpc: hasPendingHigh,
-      worker: hasScheduled,
+      grpc: hasPendingHigh || grpcPulse,
+      worker: recentActivity || grpcPulse,
       db: true
     };
-  }, [jobs]);
+  }, [jobs, grpcPulse]);
 
   return (
     <>
-      <div className="bg-image"></div>
+      <div className="ambient-bg">
+        <div className="ambient-orb orb-1"></div>
+        <div className="ambient-orb orb-2"></div>
+        <div className="ambient-orb orb-3"></div>
+      </div>
       <div className="app-container">
         
         <header className="header reveal-on-scroll">
@@ -244,8 +265,12 @@ function App() {
                   </div>
                 )}
                 
-                {jobs.map((job) => (
-                  <div key={job.id} className="job-card">
+                {jobs.map((job, index) => (
+                  <div 
+                    key={job.id} 
+                    className="job-card reveal-on-scroll"
+                    style={{ animationDelay: `${(index % 20) * 0.05}s` }}
+                  >
                     <div className="job-header">
                       <div>
                         <div className="job-type">{job.jobType}</div>
@@ -279,8 +304,8 @@ function App() {
 
             {/* Splitter Arrow */}
             <svg width="400" height="50" viewBox="0 0 400 50" style={{ display: 'block', margin: '0 auto' }}>
-              <path d="M 200 0 L 200 25 L 90 25 L 90 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="8" className={`arch-path ${activeStates.kafka ? 'active' : ''}`} />
-              <path d="M 200 0 L 200 25 L 310 25 L 310 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="8" className={`arch-path grpc ${activeStates.grpc ? 'active' : ''}`} />
+              <path d="M 200 0 L 200 25 L 90 25 L 90 50" fill="none" stroke="var(--text-secondary)" strokeWidth="3" strokeDasharray="8" className={`arch-path ${activeStates.kafka ? 'active' : ''}`} />
+              <path d="M 200 0 L 200 25 L 310 25 L 310 50" fill="none" stroke="var(--text-secondary)" strokeWidth="3" strokeDasharray="8" className={`arch-path grpc ${activeStates.grpc ? 'active' : ''}`} />
             </svg>
 
             {/* Level 2: Queues */}
@@ -299,8 +324,8 @@ function App() {
 
             {/* Merger Arrow */}
             <svg width="400" height="50" viewBox="0 0 400 50" style={{ display: 'block', margin: '0 auto' }}>
-              <path d="M 90 0 L 90 25 L 200 25 L 200 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="8" className={`arch-path ${activeStates.worker && activeStates.kafka ? 'active' : ''}`} />
-              <path d="M 310 0 L 310 25 L 200 25 L 200 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="8" className={`arch-path grpc ${activeStates.worker && activeStates.grpc ? 'active' : ''}`} />
+              <path d="M 90 0 L 90 25 L 200 25 L 200 50" fill="none" stroke="var(--text-secondary)" strokeWidth="3" strokeDasharray="8" className={`arch-path ${activeStates.worker && activeStates.kafka ? 'active' : ''}`} />
+              <path d="M 310 0 L 310 25 L 200 25 L 200 50" fill="none" stroke="var(--text-secondary)" strokeWidth="3" strokeDasharray="8" className={`arch-path grpc ${activeStates.worker && activeStates.grpc ? 'active' : ''}`} />
             </svg>
 
             {/* Level 3: Workers */}
@@ -312,7 +337,7 @@ function App() {
             
             {/* Straight Arrow */}
             <svg width="400" height="30" viewBox="0 0 400 30" style={{ display: 'block', margin: '0 auto' }}>
-              <path d="M 200 0 L 200 30" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" strokeDasharray="8" className={`arch-path active-db`} />
+              <path d="M 200 0 L 200 30" fill="none" stroke="var(--text-secondary)" strokeWidth="3" strokeDasharray="8" className={`arch-path active-db`} />
             </svg>
 
             {/* Level 4: Database */}
