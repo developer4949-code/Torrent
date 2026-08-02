@@ -12,7 +12,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    show-sql: true
+    show-sql: false
+
+grpc:
+  client:
+    fastTrack:
+      address: 'static://localhost:9090'
+      negotiation-type: plaintext
   flyway:
     enabled: true
     baseline-on-migrate: true

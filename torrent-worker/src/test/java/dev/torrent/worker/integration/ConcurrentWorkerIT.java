@@ -5,7 +5,7 @@ import dev.torrent.common.domain.JobPriority;
 import dev.torrent.common.domain.JobStatus;
 import dev.torrent.common.repository.JobRepository;
 import dev.torrent.worker.executor.JobExecutor;
-import dev.torrent.worker.executor.JobPoller;
+import dev.torrent.worker.listener.JobKafkaListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class ConcurrentWorkerIT {
     private JobRepository jobRepository;
 
     @Autowired
-    private JobExecutor jobExecutor;
+    private JobKafkaListener jobKafkaListener;
 
     @BeforeEach
     void setUp() {
@@ -58,8 +58,8 @@ public class ConcurrentWorkerIT {
     }
 
     @Test
-    void exactlyOneWorkerExecutesJob() throws Exception {
-        // Submit 1 job
+    void onlyOneWorkerExecutesJob() throws InterruptedException {
+        // Create 1 job
         Job job = new Job();
         job.setIdempotencyKey("concurrent-test-1");
         job.setJobType("TEST_JOB");
@@ -69,34 +69,20 @@ public class ConcurrentWorkerIT {
         job.setPriority(JobPriority.STANDARD);
         jobRepository.save(job);
 
-        // start 3 workers concurrently
-        int workerCount = 3;
-        ExecutorService executor = Executors.newFixedThreadPool(workerCount);
-        CountDownLatch startLatch = new CountDownLatch(1);
-        CountDownLatch doneLatch = new CountDownLatch(workerCount);
+        // Spin up 3 concurrent threads attempting to process the message
+        int threadCount = 3;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
 
-        for (int i = 0; i < workerCount; i++) {
-            final String workerId = "test-worker-" + i;
-            executor.submit(() -> {
-                try {
-                    startLatch.await();
-                    JobPoller poller = new JobPoller(jobRepository, jobExecutor);
-                    java.lang.reflect.Field workerIdField = JobPoller.class.getDeclaredField("workerId");
-                    workerIdField.setAccessible(true);
-                    workerIdField.set(poller, workerId);
-                    
-                    poller.pollForJobs();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    doneLatch.countDown();
-                }
-            });
+        for (int i = 0; i < threadCount; i++) {
+            Runnable task = () -> {
+                jobKafkaListener.onMessage(job.getId().toString());
+                latch.countDown();
+            };
+            executorService.submit(task);
         }
 
-        // Unleash the workers concurrently
-        startLatch.countDown();
-        doneLatch.await(5, TimeUnit.SECONDS);
+        latch.await(5, TimeUnit.SECONDS);
 
         // Wait a bit for async execution to complete
         Thread.sleep(1000);
@@ -109,7 +95,5 @@ public class ConcurrentWorkerIT {
         assertThat(executedJob.getStatus()).isEqualTo(JobStatus.COMPLETED);
         // Assert attempt count is 1 (no duplicates)
         assertThat(executedJob.getAttemptCount()).isEqualTo(1);
-        // Worker ID should be one of our test workers
-        assertThat(executedJob.getWorkerId()).startsWith("test-worker-");
     }
 }

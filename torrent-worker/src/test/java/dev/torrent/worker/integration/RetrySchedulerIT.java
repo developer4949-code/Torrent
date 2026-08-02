@@ -4,7 +4,7 @@ import dev.torrent.common.domain.Job;
 import dev.torrent.common.domain.JobPriority;
 import dev.torrent.common.domain.JobStatus;
 import dev.torrent.common.repository.JobRepository;
-import dev.torrent.worker.executor.JobPoller;
+import dev.torrent.worker.listener.JobKafkaListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class RetrySchedulerIT {
     private JobRepository jobRepository;
 
     @Autowired
-    private JobPoller jobPoller;
+    private JobKafkaListener jobKafkaListener;
 
     @BeforeEach
     void setUp() {
@@ -66,7 +66,7 @@ public class RetrySchedulerIT {
         jobRepository.save(job);
 
         // Attempt 1
-        jobPoller.pollForJobs();
+        jobKafkaListener.onMessage(job.getId().toString());
         await().atMost(5, TimeUnit.SECONDS).until(() -> {
             Job j = jobRepository.findAll().get(0);
             return j.getStatus() == JobStatus.SCHEDULED && j.getAttemptCount() == 1;
@@ -78,7 +78,7 @@ public class RetrySchedulerIT {
         jobRepository.save(j1);
 
         // Attempt 2
-        jobPoller.pollForJobs();
+        jobKafkaListener.onMessage(job.getId().toString());
         await().atMost(5, TimeUnit.SECONDS).until(() -> {
             Job j = jobRepository.findAll().get(0);
             return j.getStatus() == JobStatus.SCHEDULED && j.getAttemptCount() == 2;
@@ -90,7 +90,7 @@ public class RetrySchedulerIT {
         jobRepository.save(j2);
 
         // Attempt 3 (reaches maxAttempts)
-        jobPoller.pollForJobs();
+        jobKafkaListener.onMessage(job.getId().toString());
         await().atMost(5, TimeUnit.SECONDS).until(() -> {
             Job j = jobRepository.findAll().get(0);
             return j.getStatus() == JobStatus.DEAD && j.getAttemptCount() == 3;

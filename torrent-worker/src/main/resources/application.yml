@@ -17,6 +17,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
 
+grpc:
+  server:
+    port: 9090
+
 torrent:
   worker:
     id: ${HOSTNAME:localhost}-${random.uuid}

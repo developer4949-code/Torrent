@@ -9,6 +9,12 @@ import dev.torrent.common.domain.JobPriority;
 import dev.torrent.common.domain.JobStatus;
 import dev.torrent.api.dto.JobRequestDto;
 import dev.torrent.common.repository.JobRepository;
+import dev.torrent.grpc.JobExecutionRequest;
+import dev.torrent.grpc.JobExecutionResponse;
+import dev.torrent.grpc.JobExecutionServiceGrpc;
+import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +25,11 @@ import java.util.Optional;
 
 @Service
 public class JobService {
+
+    private static final Logger log = LoggerFactory.getLogger(JobService.class);
+
+    @GrpcClient("fastTrack")
+    private JobExecutionServiceGrpc.JobExecutionServiceBlockingStub fastTrackStub;
 
     private final JobRepository jobRepository;
     private final CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
@@ -60,6 +71,25 @@ public class JobService {
         }
 
         Job savedJob = jobRepository.save(job);
+        
+        if (savedJob.getPriority() == JobPriority.HIGH) {
+            log.info("Job {} has HIGH priority. Attempting gRPC fast-track execution...", savedJob.getId());
+            try {
+                JobExecutionRequest grpcRequest = JobExecutionRequest.newBuilder()
+                        .setJobId(savedJob.getId().toString())
+                        .build();
+                JobExecutionResponse response = fastTrackStub.executeJob(grpcRequest);
+                
+                if (response.getSuccess()) {
+                    log.info("gRPC fast-track execution accepted for Job {}", savedJob.getId());
+                } else {
+                    log.warn("gRPC fast-track execution rejected for Job {}: {}", savedJob.getId(), response.getMessage());
+                }
+            } catch (Exception e) {
+                log.warn("Failed to trigger gRPC fast-track for Job {}. It will fallback to standard Scheduler queue. Error: {}", savedJob.getId(), e.getMessage());
+            }
+        }
+        
         return new SubmissionResult(savedJob, false);
     }
 
