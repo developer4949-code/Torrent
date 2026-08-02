@@ -24,6 +24,7 @@
         <module>torrent-scheduler</module>
         <module>torrent-worker</module>
         <module>torrent-admin</module>
+        <module>torrent-monolith</module>
         <module>torrent-grpc</module>
     </modules>
 </project>
