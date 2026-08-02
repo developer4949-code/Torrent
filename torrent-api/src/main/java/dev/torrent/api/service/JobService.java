@@ -9,6 +9,7 @@ import dev.torrent.common.domain.JobPriority;
 import dev.torrent.common.domain.JobStatus;
 import dev.torrent.api.dto.JobRequestDto;
 import dev.torrent.common.repository.JobRepository;
+import dev.torrent.common.service.ClusterLogger;
 import dev.torrent.grpc.JobExecutionRequest;
 import dev.torrent.grpc.JobExecutionResponse;
 import dev.torrent.grpc.JobExecutionServiceGrpc;
@@ -17,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -33,10 +36,12 @@ public class JobService {
     private JobExecutionServiceGrpc.JobExecutionServiceBlockingStub fastTrackStub;
 
     private final JobRepository jobRepository;
+    private final ClusterLogger logger;
     private final CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
 
-    public JobService(JobRepository jobRepository) {
+    public JobService(JobRepository jobRepository, ClusterLogger logger) {
         this.jobRepository = jobRepository;
+        this.logger = logger;
     }
 
     @Transactional
@@ -72,23 +77,29 @@ public class JobService {
         }
 
         Job savedJob = jobRepository.save(job);
+        logger.log("API-GATEWAY", "Job " + savedJob.getId() + " (" + savedJob.getJobType() + ") saved to PostgreSQL");
         
         if (savedJob.getPriority() == JobPriority.HIGH) {
-            log.info("Job {} has HIGH priority. Attempting gRPC fast-track execution...", savedJob.getId());
-            try {
-                JobExecutionRequest grpcRequest = JobExecutionRequest.newBuilder()
-                        .setJobId(savedJob.getId().toString())
-                        .build();
-                JobExecutionResponse response = fastTrackStub.executeJob(grpcRequest);
-                
-                if (response.getSuccess()) {
-                    log.info("gRPC fast-track execution accepted for Job {}", savedJob.getId());
-                } else {
-                    log.warn("gRPC fast-track execution rejected for Job {}: {}", savedJob.getId(), response.getMessage());
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    logger.log("gRPC", "Fast-tracking HIGH priority job " + savedJob.getId() + " directly to Worker via gRPC");
+                    try {
+                        JobExecutionRequest grpcRequest = JobExecutionRequest.newBuilder()
+                                .setJobId(savedJob.getId().toString())
+                                .build();
+                        JobExecutionResponse response = fastTrackStub.executeJob(grpcRequest);
+                        
+                        if (response.getSuccess()) {
+                            log.info("gRPC fast-track execution accepted for Job {}", savedJob.getId());
+                        } else {
+                            log.warn("gRPC fast-track execution rejected for Job {}: {}", savedJob.getId(), response.getMessage());
+                        }
+                    } catch (Exception e) {
+                        log.warn("Failed to trigger gRPC fast-track for Job {}. It will fallback to standard Scheduler queue. Error: {}", savedJob.getId(), e.getMessage());
+                    }
                 }
-            } catch (Exception e) {
-                log.warn("Failed to trigger gRPC fast-track for Job {}. It will fallback to standard Scheduler queue. Error: {}", savedJob.getId(), e.getMessage());
-            }
+            });
         }
         
         return new SubmissionResult(savedJob, false);

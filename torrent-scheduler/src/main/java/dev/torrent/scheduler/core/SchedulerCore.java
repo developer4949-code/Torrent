@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+import dev.torrent.common.service.ClusterLogger;
 
 @Component
 public class SchedulerCore {
@@ -18,10 +19,12 @@ public class SchedulerCore {
     
     private final JdbcTemplate jdbcTemplate;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ClusterLogger logger;
 
-    public SchedulerCore(JdbcTemplate jdbcTemplate, KafkaTemplate<String, String> kafkaTemplate) {
+    public SchedulerCore(JdbcTemplate jdbcTemplate, KafkaTemplate<String, String> kafkaTemplate, ClusterLogger logger) {
         this.jdbcTemplate = jdbcTemplate;
         this.kafkaTemplate = kafkaTemplate;
+        this.logger = logger;
     }
 
     @Scheduled(fixedDelay = 10000)
@@ -36,9 +39,10 @@ public class SchedulerCore {
         
         if (!transitionedJobIds.isEmpty()) {
             log.info("Successfully transitioned {} jobs from PENDING to SCHEDULED.", transitionedJobIds.size());
+            logger.log("SCHEDULER", "Acquired ShedLock! Found " + transitionedJobIds.size() + " jobs due for execution.");
             for (UUID id : transitionedJobIds) {
                 kafkaTemplate.send("torrent.jobs.scheduled", id.toString());
-                log.debug("Published Job ID {} to Kafka topic torrent.jobs.scheduled", id);
+                logger.log("KAFKA", "Published Job " + id + " to Kafka topic: torrent.jobs.scheduled");
             }
         } else {
             log.debug("No PENDING jobs due for execution at this time.");

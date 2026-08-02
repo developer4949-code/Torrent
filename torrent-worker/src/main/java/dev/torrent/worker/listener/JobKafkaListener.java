@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.UUID;
+import dev.torrent.common.service.ClusterLogger;
 
 @Component
 public class JobKafkaListener {
@@ -18,10 +19,12 @@ public class JobKafkaListener {
 
     private final JobRepository jobRepository;
     private final JobExecutor jobExecutor;
+    private final ClusterLogger logger;
 
-    public JobKafkaListener(JobRepository jobRepository, JobExecutor jobExecutor) {
+    public JobKafkaListener(JobRepository jobRepository, JobExecutor jobExecutor, ClusterLogger logger) {
         this.jobRepository = jobRepository;
         this.jobExecutor = jobExecutor;
+        this.logger = logger;
     }
 
     @KafkaListener(topics = "torrent.jobs.scheduled", groupId = "torrent-worker-group")
@@ -35,6 +38,7 @@ public class JobKafkaListener {
             if (optionalJob.isPresent()) {
                 Job job = optionalJob.get();
                 log.info("Submitting Job ID: {} to JobExecutor", job.getId());
+                logger.log("KAFKA", "Consumed Job " + job.getId() + " from topic: torrent.jobs.scheduled");
                 jobExecutor.execute(job);
             } else {
                 log.warn("Received message for non-existent Job ID: {}", jobId);

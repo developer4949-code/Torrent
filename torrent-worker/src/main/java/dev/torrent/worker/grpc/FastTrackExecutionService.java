@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.UUID;
+import dev.torrent.common.service.ClusterLogger;
 
 @GrpcService
 public class FastTrackExecutionService extends JobExecutionServiceGrpc.JobExecutionServiceImplBase {
@@ -21,10 +22,12 @@ public class FastTrackExecutionService extends JobExecutionServiceGrpc.JobExecut
     
     private final JobRepository jobRepository;
     private final JobExecutor jobExecutor;
+    private final ClusterLogger logger;
 
-    public FastTrackExecutionService(JobRepository jobRepository, JobExecutor jobExecutor) {
+    public FastTrackExecutionService(JobRepository jobRepository, JobExecutor jobExecutor, ClusterLogger logger) {
         this.jobRepository = jobRepository;
         this.jobExecutor = jobExecutor;
+        this.logger = logger;
     }
 
     @Override
@@ -36,6 +39,7 @@ public class FastTrackExecutionService extends JobExecutionServiceGrpc.JobExecut
             Optional<Job> optionalJob = jobRepository.findById(jobId);
             if (optionalJob.isPresent()) {
                 Job job = optionalJob.get();
+                logger.log("gRPC", "Consumed Job " + job.getId() + " via Fast-Track Stream");
                 jobExecutor.execute(job);
                 
                 responseObserver.onNext(JobExecutionResponse.newBuilder()

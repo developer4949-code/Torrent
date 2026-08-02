@@ -1,0 +1,95 @@
+.terminal-container {
+  margin-top: 32px;
+  background: #0d1117;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #161b22;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: #8b949e;
+}
+
+.term-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #c9d1d9;
+}
+
+.term-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.safe-icon {
+  color: #3fb950;
+}
+
+.term-status {
+  color: #3fb950;
+  font-weight: 500;
+}
+
+.terminal-body {
+  padding: 16px;
+  height: 250px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #c9d1d9;
+}
+
+.term-placeholder {
+  color: #484f58;
+  font-style: italic;
+}
+
+.term-line {
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+
+.term-prompt {
+  color: #3fb950;
+  font-weight: bold;
+}
+
+/* Syntax Highlighting */
+.log-grpc {
+  color: #a371f7;
+}
+
+.log-kafka {
+  color: #f78166;
+}
+
+.log-db {
+  color: #58a6ff;
+}
+
+/* Custom Scrollbar for Terminal */
+.terminal-body::-webkit-scrollbar {
+  width: 8px;
+}
+.terminal-body::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+.terminal-body::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+.terminal-body::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}

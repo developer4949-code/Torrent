@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "dev.torrent")
 @EntityScan(basePackages = "dev.torrent.common.domain")
 @EnableJpaRepositories(basePackages = "dev.torrent.common.repository")
 @EnableScheduling

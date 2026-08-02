@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "dev.torrent")
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "10m")
 @EntityScan(basePackages = "dev.torrent.common.domain")
