@@ -1,4 +1,6 @@
 services:
+  - type: redis
+    name: torrent-redis
   - type: web
     name: torrent-backend
     env: docker
@@ -66,8 +68,9 @@ services:
 
   - type: pserv
     name: torrent-kafka
-    env: docker
-    image: bitnami/kafka:3.5
+    env: image
+    image:
+      url: docker.io/bitnami/kafka:3.5
     envVars:
       - key: KAFKA_CFG_ZOOKEEPER_CONNECT
         fromService:
@@ -83,8 +86,9 @@ services:
     
   - type: pserv
     name: torrent-zookeeper
-    env: docker
-    image: bitnami/zookeeper:3.8
+    env: image
+    image:
+      url: docker.io/bitnami/zookeeper:3.8
     envVars:
       - key: ALLOW_ANONYMOUS_LOGIN
         value: yes
@@ -93,6 +97,3 @@ databases:
   - name: torrent-db
     databaseName: torrent
     user: torrent
-
-redis:
-  - name: torrent-redis
