@@ -1,10 +1,8 @@
 services:
-  - type: redis
-    name: torrent-redis
-    ipAllowList: []
   - type: web
     name: torrent-backend
     env: docker
+    plan: free
     dockerfilePath: ./Dockerfile.backend
     envVars:
       - key: DB_HOST
@@ -28,26 +26,26 @@ services:
           name: torrent-db
           property: database
       - key: REDIS_HOST
-        fromService:
-          type: redis
-          name: torrent-redis
-          property: host
+        sync: false
       - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: torrent-redis
-          property: port
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_SSL
+        value: true
       - key: KAFKA_BOOTSTRAP_SERVERS
-        fromService:
-          type: pserv
-          name: torrent-kafka
-          property: hostport
+        sync: false
       - key: KAFKA_SECURITY_PROTOCOL
-        value: PLAINTEXT
+        value: SASL_SSL
+      - key: KAFKA_SASL_MECHANISM
+        value: SCRAM-SHA-256
+      - key: KAFKA_JAAS_CONFIG
+        sync: false
     
   - type: web
     name: torrent-console
     env: docker
+    plan: free
     dockerfilePath: ./Dockerfile.console
     envVars:
       - key: VITE_API_URL_BASE
@@ -56,39 +54,14 @@ services:
   - type: web
     name: torrent-ui
     env: docker
+    plan: free
     dockerfilePath: ./Dockerfile.ui
     envVars:
       - key: VITE_API_URL_BASE
         sync: false
 
-  - type: pserv
-    name: torrent-kafka
-    env: image
-    image:
-      url: docker.io/bitnami/kafka:3.5
-    envVars:
-      - key: KAFKA_CFG_ZOOKEEPER_CONNECT
-        fromService:
-          type: pserv
-          name: torrent-zookeeper
-          property: hostport
-      - key: ALLOW_PLAINTEXT_LISTENER
-        value: yes
-      - key: KAFKA_CFG_LISTENERS
-        value: PLAINTEXT://:9092
-      - key: KAFKA_CFG_ADVERTISED_LISTENERS
-        value: PLAINTEXT://${RENDER_SERVICE_NAME}:${PORT}
-    
-  - type: pserv
-    name: torrent-zookeeper
-    env: image
-    image:
-      url: docker.io/bitnami/zookeeper:3.8
-    envVars:
-      - key: ALLOW_ANONYMOUS_LOGIN
-        value: yes
-
 databases:
   - name: torrent-db
     databaseName: torrent
     user: torrent
+    plan: free
