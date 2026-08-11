@@ -1,34 +1,53 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:16-alpine
     container_name: torrent-postgres
+    restart: always
     environment:
       POSTGRES_DB: torrent
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   redis:
     image: redis:7-alpine
     container_name: torrent-redis
+    restart: always
     ports:
       - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: torrent-zookeeper
+    restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_HEAP_OPTS: "-Xmx128M -Xms64M"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: torrent-kafka
+    restart: always
     depends_on:
       - zookeeper
-    ports:
-      - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -36,6 +55,70 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: "-Xmx256M -Xms128M"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  torrent-backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: torrent-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - kafka
+      - redis
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: torrent
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_SECURITY_PROTOCOL: PLAINTEXT
+      KAFKA_SASL_MECHANISM: PLAIN
+      JAVA_TOOL_OPTIONS: "-Xmx256m -Xms128m"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  torrent-console:
+    build:
+      context: .
+      dockerfile: Dockerfile.console
+    container_name: torrent-console
+    restart: always
+    ports:
+      - "8081:80"
+    depends_on:
+      - torrent-backend
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  torrent-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    container_name: torrent-ui
+    restart: always
+    ports:
+      - "5174:80"
+    depends_on:
+      - torrent-backend
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
 volumes:
   postgres_data:
