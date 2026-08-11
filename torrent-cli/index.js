@@ -13,10 +13,7 @@ const CONFIG_DIR = path.join(os.homedir(), '.torrent');
 const COMPOSE_FILE = path.join(CONFIG_DIR, 'docker-compose.yml');
 const GITHUB_COMPOSE_URL = 'https://raw.githubusercontent.com/developer4949-code/Torrent/main/docker-compose.yml';
 
-// Create ~/.torrent if it doesn't exist
-if (!fs.existsSync(CONFIG_DIR)) {
-  fs.mkdirSync(CONFIG_DIR, { recursive: true });
-}
+
 
 function cloneOrPullRepo() {
   if (!fs.existsSync(CONFIG_DIR)) {
