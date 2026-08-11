@@ -1,6 +1,6 @@
 {
-  "name": "torrent-engine",
-  "version": "1.0.0",
+  "name": "@developer_4949/torrent-engine",
+  "version": "1.0.1",
   "description": "The open-source distributed job engine. 1-click startup.",
   "main": "index.js",
   "bin": {

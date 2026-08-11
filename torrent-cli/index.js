@@ -18,36 +18,28 @@ if (!fs.existsSync(CONFIG_DIR)) {
   fs.mkdirSync(CONFIG_DIR, { recursive: true });
 }
 
-function downloadFile(url, dest) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
-    https.get(url, (response) => {
-      if (response.statusCode === 200) {
-        response.pipe(file);
-        file.on('finish', () => {
-          file.close(resolve);
-        });
-      } else {
-        reject(new Error(`Failed to download file. Status code: ${response.statusCode}`));
-      }
-    }).on('error', (err) => {
-      fs.unlink(dest, () => {});
-      reject(err);
-    });
-  });
+function cloneOrPullRepo() {
+  if (!fs.existsSync(CONFIG_DIR)) {
+    console.log('⬇️  Cloning Torrent repository from GitHub...');
+    execSync('git clone https://github.com/developer4949-code/Torrent.git .torrent', { cwd: os.homedir(), stdio: 'inherit' });
+  } else {
+    console.log('🔄 Pulling latest updates from GitHub...');
+    try {
+      execSync('git pull', { cwd: CONFIG_DIR, stdio: 'ignore' });
+    } catch (e) {
+      // ignore pull errors
+    }
+  }
 }
 
 async function startEngine() {
   console.log('🚀 Starting Torrent Distributed Engine...');
   
-  if (!fs.existsSync(COMPOSE_FILE)) {
-    console.log('⬇️  Downloading docker-compose configuration from GitHub...');
-    try {
-      await downloadFile(GITHUB_COMPOSE_URL, COMPOSE_FILE);
-    } catch (e) {
-      console.error('❌ Failed to download configuration:', e.message);
-      process.exit(1);
-    }
+  try {
+    cloneOrPullRepo();
+  } catch (e) {
+    console.error('❌ Failed to pull repository. Do you have git installed?');
+    process.exit(1);
   }
 
   console.log('🐳 Spinning up Docker containers. This may take a few moments...');
