@@ -15,5 +15,7 @@ public record JobRequestDto(
     @NotNull @Valid ScheduleDto schedule,
     @NotNull JobPriority priority,
     @Valid RetryPolicyDto retryPolicy,
-    @Min(1) Integer timeoutSeconds
+    @Min(1) Integer timeoutSeconds,
+    java.util.List<java.util.UUID> dependencies,
+    String webhookUrl
 ) {}

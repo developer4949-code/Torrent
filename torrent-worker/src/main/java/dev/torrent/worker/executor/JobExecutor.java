@@ -8,6 +8,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import dev.torrent.common.service.ClusterLogger;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 
 @Component
 public class JobExecutor {
@@ -43,6 +48,30 @@ public class JobExecutor {
                 current.setCompletedAt(OffsetDateTime.now());
                 jobRepository.save(current);
                 logger.log("WORKER", "Successfully executed Job " + job.getId() + " (" + job.getJobType() + ")");
+                
+                fireWebhook(current);
+                
+                // DAG Resolution
+                java.util.List<Job> children = jobRepository.findChildrenWaitingOn(current.getId());
+                for (Job child : children) {
+                    if (child.getStatus() == JobStatus.DEPENDENCY_WAIT) {
+                        boolean allMet = true;
+                        if (child.getDependencies() != null) {
+                            for (java.util.UUID parentId : child.getDependencies()) {
+                                Job parent = jobRepository.findById(parentId).orElse(null);
+                                if (parent == null || parent.getStatus() != JobStatus.COMPLETED) {
+                                    allMet = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (allMet) {
+                            child.setStatus(JobStatus.PENDING);
+                            jobRepository.save(child);
+                            logger.log("WORKER", "DAG Cascade: All dependencies met for Job " + child.getId() + ". Promoted to PENDING.");
+                        }
+                    }
+                }
             } catch (Exception e) {
                 // Job failed
                 Job current = jobRepository.findById(job.getId()).orElse(job);
@@ -60,9 +89,31 @@ public class JobExecutor {
                     current.setCompletedAt(OffsetDateTime.now());
                     current.setErrorMessage(e.getMessage());
                     logger.log("WORKER", "Job " + job.getId() + " failed permanently! Max attempts reached.");
+                    jobRepository.save(current);
+                    fireWebhook(current);
                 }
-                jobRepository.save(current);
             }
         });
+    }
+
+    private void fireWebhook(Job job) {
+        if (job.getWebhookUrl() == null || job.getWebhookUrl().isBlank()) return;
+        try {
+            HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+            String payload = String.format("{\"id\":\"%s\", \"status\":\"%s\"}", job.getId(), job.getStatus());
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(job.getWebhookUrl()))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(payload))
+                    .build();
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                  .thenAccept(res -> logger.log("WORKER", "Fired webhook for Job " + job.getId() + " (HTTP " + res.statusCode() + ")"))
+                  .exceptionally(ex -> {
+                      logger.log("WORKER", "Failed to fire webhook for Job " + job.getId() + ": " + ex.getMessage());
+                      return null;
+                  });
+        } catch (Exception ex) {
+            logger.log("WORKER", "Error configuring webhook: " + ex.getMessage());
+        }
     }
 }

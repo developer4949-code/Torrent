@@ -36,6 +36,19 @@ public class ClusterMetricsController {
         long pendingJobs = jobRepository.countByStatus(dev.torrent.common.domain.JobStatus.PENDING);
         metrics.put("kafkaLag", pendingJobs);
 
+        metrics.put("totalJobs", jobRepository.count());
+        metrics.put("completedJobs", jobRepository.countByStatus(dev.torrent.common.domain.JobStatus.COMPLETED));
+        metrics.put("failedJobs", 
+            jobRepository.countByStatus(dev.torrent.common.domain.JobStatus.FAILED) + 
+            jobRepository.countByStatus(dev.torrent.common.domain.JobStatus.DEAD) +
+            jobRepository.countByStatus(dev.torrent.common.domain.JobStatus.TIMED_OUT)
+        );
+        metrics.put("activeJobs", 
+            jobRepository.countByStatus(dev.torrent.common.domain.JobStatus.RUNNING) + 
+            pendingJobs +
+            jobRepository.countByStatus(dev.torrent.common.domain.JobStatus.SCHEDULED)
+        );
+
         return metrics;
     }
 }

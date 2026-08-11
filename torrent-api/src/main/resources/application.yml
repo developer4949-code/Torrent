@@ -19,3 +19,7 @@ grpc:
     fastTrack:
       address: 'static://localhost:9090'
       negotiation-type: plaintext
+
+torrent:
+  api:
+    key: ${TORRENT_API_KEY:torrent_secret_123}

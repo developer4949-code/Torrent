@@ -13,7 +13,7 @@ export const BackendTerminal: React.FC = () => {
   const logId = useRef(0);
 
   useEffect(() => {
-    const eventSource = new EventSource('http://localhost:8080/api/stream/logs');
+    const eventSource = new EventSource(`${import.meta.env.VITE_API_URL_BASE || 'http://localhost:8080'}/api/stream/logs`);
 
     eventSource.addEventListener('log', (event) => {
       const newLog = { id: ++logId.current, text: event.data };

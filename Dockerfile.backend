@@ -1,0 +1,27 @@
+# Build stage
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY torrent-parent/pom.xml torrent-parent/
+COPY torrent-common/pom.xml torrent-common/
+COPY torrent-api/pom.xml torrent-api/
+COPY torrent-worker/pom.xml torrent-worker/
+COPY torrent-scheduler/pom.xml torrent-scheduler/
+COPY torrent-admin/pom.xml torrent-admin/
+COPY torrent-monolith/pom.xml torrent-monolith/
+COPY torrent-grpc/pom.xml torrent-grpc/
+
+# Resolve dependencies
+RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
+
+# Copy source code
+COPY . .
+# Build the application
+RUN mvn -B -e clean package -DskipTests
+
+# Run stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/torrent-monolith/target/torrent-monolith-1.0.0-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]

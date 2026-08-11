@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication(scanBasePackages = {"dev.torrent.api", "dev.torrent.worker", "dev.torrent.scheduler", "dev.torrent.common"})
+@SpringBootApplication(scanBasePackages = {"dev.torrent.api", "dev.torrent.worker", "dev.torrent.scheduler", "dev.torrent.common", "dev.torrent.admin"})
 @EnableScheduling
 public class TorrentMonolithApplication {
 

@@ -1,0 +1,1 @@
+ALTER TABLE jobs ADD COLUMN webhook_url VARCHAR(512);

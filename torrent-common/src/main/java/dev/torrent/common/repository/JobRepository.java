@@ -20,6 +20,9 @@ public interface JobRepository extends JpaRepository<Job, JobId> {
     List<Job> findByStatus(dev.torrent.common.domain.JobStatus status);
     List<Job> findTop50ByOrderByScheduledAtDesc();
 
+    @Query(value = "SELECT * FROM jobs WHERE dependencies @> cast(concat('\"', :parentId, '\"') as jsonb)", nativeQuery = true)
+    List<Job> findChildrenWaitingOn(UUID parentId);
+
     @Query(value = """
         SELECT * FROM jobs
         WHERE status = 'SCHEDULED'

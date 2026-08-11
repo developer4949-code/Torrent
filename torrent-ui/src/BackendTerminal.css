@@ -1,22 +1,41 @@
 .terminal-container {
   margin-top: 32px;
-  background: #0d1117;
-  border: 1px solid var(--border-strong);
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  box-shadow: var(--shadow-panel);
+  font-family: var(--font-mono);
+}
+
+.terminal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  pointer-events: none;
+}
+
+.terminal-container:hover {
+  border-color: var(--border-strong);
 }
 
 .terminal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
-  background: #161b22;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid var(--border);
   font-size: 0.85rem;
-  color: #8b949e;
+  color: var(--text-secondary);
 }
 
 .term-left {
@@ -24,35 +43,41 @@
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #c9d1d9;
+  color: var(--text);
+}
+
+.term-left svg {
+  color: var(--blue);
 }
 
 .term-right {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  font-size: 0.78rem;
 }
 
 .safe-icon {
-  color: #3fb950;
+  color: var(--green);
 }
 
 .term-status {
-  color: #3fb950;
-  font-weight: 500;
+  color: var(--green);
+  font-weight: 600;
 }
 
 .terminal-body {
-  padding: 16px;
+  padding: 16px 18px;
   height: 250px;
   overflow-y: auto;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: #c9d1d9;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .term-placeholder {
-  color: #484f58;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -62,21 +87,21 @@
 }
 
 .term-prompt {
-  color: #3fb950;
+  color: var(--green);
   font-weight: bold;
 }
 
-/* Syntax Highlighting */
+/* Syntax Highlighting — brand route colors */
 .log-grpc {
-  color: #a371f7;
+  color: var(--c-grpc);
 }
 
 .log-kafka {
-  color: #f78166;
+  color: var(--c-kafka);
 }
 
 .log-db {
-  color: #58a6ff;
+  color: var(--blue);
 }
 
 /* Custom Scrollbar for Terminal */
@@ -84,12 +109,12 @@
   width: 8px;
 }
 .terminal-body::-webkit-scrollbar-track {
-  background: #0d1117;
+  background: transparent;
 }
 .terminal-body::-webkit-scrollbar-thumb {
-  background: #30363d;
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
 }
 .terminal-body::-webkit-scrollbar-thumb:hover {
-  background: #484f58;
+  background: rgba(255, 255, 255, 0.22);
 }

@@ -56,10 +56,18 @@ public class JobService {
         job.setJobType(request.jobType());
         job.setPayload(request.payload().toString());
         job.setPriority(request.priority() != null ? request.priority() : JobPriority.STANDARD);
+        job.setWebhookUrl(request.webhookUrl());
         
         OffsetDateTime scheduledAt = computeNextExecutionTime(request.schedule().expression());
         job.setScheduledAt(scheduledAt);
-        job.setStatus(JobStatus.PENDING);
+        
+        if (request.dependencies() != null && !request.dependencies().isEmpty()) {
+            job.setDependencies(request.dependencies());
+            job.setStatus(JobStatus.DEPENDENCY_WAIT);
+            logger.log("API-GATEWAY", "Job DAG: Waiting for " + request.dependencies().size() + " dependencies to finish.");
+        } else {
+            job.setStatus(JobStatus.PENDING);
+        }
 
         if (request.retryPolicy() != null) {
             if (request.retryPolicy().maxAttempts() != null) {
@@ -79,7 +87,7 @@ public class JobService {
         Job savedJob = jobRepository.save(job);
         logger.log("API-GATEWAY", "Job " + savedJob.getId() + " (" + savedJob.getJobType() + ") saved to PostgreSQL");
         
-        if (savedJob.getPriority() == JobPriority.HIGH) {
+        if (savedJob.getPriority() == JobPriority.HIGH && savedJob.getStatus() != JobStatus.DEPENDENCY_WAIT) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {

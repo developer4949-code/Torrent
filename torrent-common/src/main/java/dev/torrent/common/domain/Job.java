@@ -27,6 +27,13 @@ public class Job {
     private String jobType;
 
     @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "dependencies", columnDefinition = "jsonb")
+    private java.util.List<UUID> dependencies = new java.util.ArrayList<>();
+
+    @Column(name = "webhook_url")
+    private String webhookUrl;
+
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "payload", nullable = false)
     private String payload; // Store JSONB as String for simplicity, or use JsonNode
 
@@ -160,5 +167,18 @@ public class Job {
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
 
     public OffsetDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public java.util.List<UUID> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(java.util.List<UUID> dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    public String getWebhookUrl() { return webhookUrl; }
+    public void setWebhookUrl(String webhookUrl) { this.webhookUrl = webhookUrl; }
 }

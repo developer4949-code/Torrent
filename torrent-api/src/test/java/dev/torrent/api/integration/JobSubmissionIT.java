@@ -66,7 +66,9 @@ public class JobSubmissionIT {
                 new ScheduleDto("CRON", "0 9 * * MON"),
                 JobPriority.HIGH,
                 new RetryPolicyDto(3, 2.0, 300),
-                120
+                120,
+                null,
+                null
         );
 
         given()
@@ -93,7 +95,9 @@ public class JobSubmissionIT {
                 new ScheduleDto("CRON", "0 9 * * MON"),
                 JobPriority.HIGH,
                 new RetryPolicyDto(3, 2.0, 300),
-                120
+                120,
+                null,
+                null
         );
 
         JobResponseDto response1 = given()
@@ -131,7 +135,9 @@ public class JobSubmissionIT {
                 new ScheduleDto("CRON", "invalid-cron"),
                 JobPriority.HIGH,
                 new RetryPolicyDto(3, 2.0, 300),
-                120
+                120,
+                null,
+                null
         );
 
         given()
