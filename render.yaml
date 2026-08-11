@@ -1,6 +1,7 @@
 services:
   - type: redis
     name: torrent-redis
+    ipAllowList: []
   - type: web
     name: torrent-backend
     env: docker
@@ -50,10 +51,7 @@ services:
     dockerfilePath: ./Dockerfile.console
     envVars:
       - key: VITE_API_URL_BASE
-        fromService:
-          type: web
-          name: torrent-backend
-          property: url
+        sync: false
 
   - type: web
     name: torrent-ui
@@ -61,10 +59,7 @@ services:
     dockerfilePath: ./Dockerfile.ui
     envVars:
       - key: VITE_API_URL_BASE
-        fromService:
-          type: web
-          name: torrent-backend
-          property: url
+        sync: false
 
   - type: pserv
     name: torrent-kafka
