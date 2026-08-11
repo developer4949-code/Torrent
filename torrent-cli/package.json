@@ -1,0 +1,29 @@
+{
+  "name": "torrent-engine",
+  "version": "1.0.0",
+  "description": "The open-source distributed job engine. 1-click startup.",
+  "main": "index.js",
+  "bin": {
+    "torrent": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developer4949-code/Torrent.git"
+  },
+  "keywords": [
+    "torrent",
+    "engine",
+    "kafka",
+    "springboot",
+    "distributed"
+  ],
+  "author": "Debi Prasad",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/developer4949-code/Torrent/issues"
+  },
+  "homepage": "https://github.com/developer4949-code/Torrent#readme"
+}
