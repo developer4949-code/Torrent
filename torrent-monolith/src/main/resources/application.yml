@@ -41,6 +41,8 @@ grpc:
       negotiation-type: plaintext
 
 torrent:
+  api:
+    key: ${API_KEY:secret-dev-key}
   worker:
     id: ${HOSTNAME:localhost}-${random.uuid}
     thread-pool:
