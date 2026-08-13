@@ -2,54 +2,60 @@
    Torrent Distributed Engine — Design System
    ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@400;500;600&display=swap');
+
 :root {
   /* Surfaces */
-  --bg: #05060a;
-  --bg-elevated: #0a0c13;
-  --surface: rgba(255, 255, 255, 0.03);
-  --surface-hover: rgba(255, 255, 255, 0.06);
-  --surface-active: rgba(255, 255, 255, 0.09);
+  --bg: #1A1918;
+  --bg-elevated: #262423;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --surface-active: rgba(255, 255, 255, 0.1);
   --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-strong: rgba(255, 255, 255, 0.15);
 
   /* Text */
-  --text: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text: #F3EFEB;
+  --text-secondary: #AFA8A2;
+  --text-muted: #817C76;
 
-  /* Accents */
-  --blue: #38bdf8;
-  --indigo: #6366f1;
-  --violet: #8b5cf6;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --green: #22c55e;
-  --emerald: #34d399;
-  --red: #ef4444;
-  --rose: #fb7185;
-  --amber: #f59e0b;
-  --yellow: #facc15;
+  /* Accents - Warm minimalist */
+  --blue: #5C7B8F;
+  --indigo: #786C88;
+  --violet: #8F7285;
+  --purple: #8F7285;
+  --teal: #577C76;
+  --green: #678663;
+  --emerald: #678663;
+  --red: #AB6059;
+  --rose: #AB6059;
+  --amber: #B28350;
+  --yellow: #B28350;
+  --accent: #D97A59; /* Claude-like peach accent */
 
   /* Brand-specific route colors */
-  --c-kafka: #a78bfa;
-  --c-grpc: #fb7185;
-  --c-cron: #34d399;
-  --c-retry: #fbbf24;
+  --c-kafka: #8F7285;
+  --c-grpc: #AB6059;
+  --c-cron: #577C76;
+  --c-retry: #B28350;
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Fraunces', ui-serif, Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   /* Shape & depth */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
   --radius-pill: 999px;
-  --shadow-panel: 0 24px 50px -20px rgba(0, 0, 0, 0.7);
-  --shadow-glow-blue: 0 0 24px rgba(56, 189, 248, 0.35);
-  --shadow-glow-purple: 0 0 24px rgba(139, 92, 246, 0.35);
-  --shadow-glow-rose: 0 0 24px rgba(251, 113, 133, 0.35);
-  --shadow-glow-green: 0 0 24px rgba(34, 197, 94, 0.35);
+  --shadow-panel: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  
+  /* Removed glow shadows for flat aesthetic */
+  --shadow-glow-blue: none;
+  --shadow-glow-purple: none;
+  --shadow-glow-rose: none;
+  --shadow-glow-green: none;
 
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.22, 0.8, 0.2, 1);
@@ -126,72 +132,9 @@ body {
   inset: 0;
   z-index: -2;
   background-color: var(--bg);
-  background-image:
-    linear-gradient(180deg, rgba(5, 6, 10, 0.86), rgba(5, 6, 10, 0.92)),
-    url('/tech-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  overflow: hidden;
 }
 
-.ambient-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 70%);
-}
-
-.ambient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(110px);
-  opacity: 0.32;
-  animation: floatOrb 24s infinite ease-in-out alternate;
-  will-change: transform;
-}
-
-.orb-1 {
-  width: 560px;
-  height: 560px;
-  background: rgba(139, 92, 246, 0.5);
-  top: -140px;
-  left: -140px;
-}
-
-.orb-2 {
-  width: 480px;
-  height: 480px;
-  background: rgba(45, 212, 191, 0.4);
-  bottom: -80px;
-  right: -80px;
-  animation-delay: -8s;
-}
-
-.orb-3 {
-  width: 420px;
-  height: 420px;
-  background: rgba(56, 189, 248, 0.4);
-  top: 40%;
-  left: 34%;
-  animation-delay: -16s;
-}
-
-@keyframes floatOrb {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(50px, 30px) scale(1.08);
-  }
-  100% {
-    transform: translate(-30px, 60px) scale(0.94);
-  }
-}
+/* Orbs removed for minimalist design */
 
 /* ============================================================
    Layout
@@ -204,26 +147,13 @@ body {
 }
 
 .glass-panel {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--shadow-panel);
   transition: border-color 0.3s ease;
   position: relative;
-}
-
-.glass-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-  pointer-events: none;
 }
 
 .glass-panel:hover {
@@ -473,16 +403,12 @@ body {
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 4.5vw, 3.4rem);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-  background: linear-gradient(110deg, #fff 10%, #a5b4fc 32%, #67e8f9 52%, #a5b4fc 72%, #fff 90%);
-  background-size: 220% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmerGradient 9s ease-in-out infinite;
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
   margin-bottom: 14px;
 }
 

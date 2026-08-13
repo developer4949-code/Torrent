@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Activity, ListTree, Settings, KeySquare, LogOut, TerminalSquare } from 'lucide-react';
+import { Activity, ListTree, Settings, KeySquare, LogOut, Sparkles } from 'lucide-react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import JobExplorer from './pages/JobExplorer';
@@ -25,12 +25,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="app-container">
       <div className="sidebar">
         <div className="flex items-center gap-4">
-          <div style={{ background: 'var(--accent-primary)', padding: '8px', borderRadius: '8px', boxShadow: '0 0 15px var(--accent-glow)' }}>
-            <TerminalSquare size={24} color="white" />
+          <div style={{ padding: '8px' }}>
+            <Sparkles size={24} color="var(--text-primary)" strokeWidth={1.5} />
           </div>
           <div>
-            <h2 style={{ fontSize: '1.2rem', marginBottom: 0 }}>Torrent</h2>
-            <p style={{ fontSize: '0.8rem' }}>Developer Console</p>
+            <h2 style={{ fontSize: '1.2rem', marginBottom: 0, fontFamily: 'var(--font-serif)' }}>Torrent</h2>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Developer Console</p>
           </div>
         </div>
 

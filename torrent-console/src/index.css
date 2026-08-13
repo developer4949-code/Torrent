@@ -1,18 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  --bg-primary: #0f1115;
-  --bg-secondary: #1a1d24;
-  --bg-glass: rgba(26, 29, 36, 0.6);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --accent-primary: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-glow: rgba(59, 130, 246, 0.4);
-  --border-color: rgba(255, 255, 255, 0.1);
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
+  --bg-primary: #1E1D1B;
+  --bg-secondary: #262423;
+  --bg-glass: #262423;
+  --text-primary: #F3EFEB;
+  --text-secondary: #AFA8A2;
+  --accent-primary: #D97A59;
+  --accent-hover: #C56A49;
+  --accent-glow: transparent;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --success: #678663;
+  --danger: #AB6059;
+  --warning: #B28350;
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Fraunces', ui-serif, Georgia, serif;
 }
 
 * {
@@ -22,7 +25,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
@@ -51,9 +54,10 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4 { font-weight: 600; margin-bottom: 0.5rem; }
-h1 { font-size: 1.8rem; }
-h2 { font-size: 1.4rem; }
+h1, h2 { font-family: var(--font-serif); font-weight: 400; margin-bottom: 0.5rem; }
+h3, h4 { font-weight: 600; margin-bottom: 0.5rem; }
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.6rem; }
 p { color: var(--text-secondary); line-height: 1.5; }
 
 /* Buttons */
