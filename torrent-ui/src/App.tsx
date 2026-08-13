@@ -38,6 +38,7 @@ import {
 import './index.css';
 import { JobDetailsModal } from './JobDetailsModal';
 import { WorkerHealthModal } from './WorkerHealthModal';
+import { ProjectDocumentation } from './ProjectDocumentation';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1/jobs';
 
@@ -180,6 +181,7 @@ function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [connStatus, setConnStatus] = useState<'connecting' | 'live' | 'offline'>('connecting');
   const [stagedJobs, setStagedJobs] = useState<StagedJob[]>([]);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'docs'>('dashboard');
   const [running, setRunning] = useState(false);
   const [filter, setFilter] = useState<FilterKey>('ALL');
   const [grpcPulse, setGrpcPulse] = useState(false);
@@ -541,6 +543,24 @@ function App() {
               <div className="brand-tag">Distributed Job Engine</div>
             </div>
           </div>
+
+          <div className="navbar-tabs">
+            <button 
+              type="button"
+              className={`nav-tab ${currentView === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setCurrentView('dashboard')}
+            >
+              Dashboard
+            </button>
+            <button 
+              type="button"
+              className={`nav-tab ${currentView === 'docs' ? 'active' : ''}`}
+              onClick={() => setCurrentView('docs')}
+            >
+              Documentation
+            </button>
+          </div>
+
           <div className="navbar-actions">
             <span className={`conn-pill ${connStatus === 'live' ? 'is-live' : connStatus === 'offline' ? 'is-offline' : ''}`}>
               <span className="conn-dot" />
@@ -568,6 +588,7 @@ function App() {
         </div>
       </nav>
 
+      {currentView === 'dashboard' ? (
       <div className="app-container">
         {/* Hero */}
         <header className="hero reveal-on-scroll">
@@ -1185,6 +1206,9 @@ function App() {
           </div>
         </footer>
       </div>
+      ) : (
+        <ProjectDocumentation />
+      )}
 
       {/* Toasts */}
       <div className="toast-region">
