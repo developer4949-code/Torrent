@@ -1,3 +1,8 @@
+@keyframes docsFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .docs-container {
   display: flex;
   max-width: 1400px;
@@ -5,7 +10,7 @@
   padding: 4rem 2rem;
   gap: 4rem;
   color: var(--text-color);
-  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: docsFadeIn 0.5s ease-out forwards;
 }
 
 .docs-sidebar {

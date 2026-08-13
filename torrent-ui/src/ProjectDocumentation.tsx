@@ -3,7 +3,7 @@ import './ProjectDocumentation.css';
 
 export function ProjectDocumentation() {
   return (
-    <div className="docs-container reveal-on-scroll">
+    <div className="docs-container">
       <div className="docs-sidebar">
         <nav className="docs-nav">
           <div className="docs-nav-section">
