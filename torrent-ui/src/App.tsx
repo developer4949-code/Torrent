@@ -340,7 +340,7 @@ function App() {
     }
   }, [jobs]);
 
-  // Scroll reveal animations (bind once — layout is static)
+  // Scroll reveal animations (re-bind when view changes)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -352,7 +352,7 @@ function App() {
     );
     document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [currentView]);
 
   // Derived stats
   const stats = useMemo(() => {

@@ -32,10 +32,6 @@ export function ProjectDocumentation() {
 
       <div className="docs-content">
         <header className="docs-header">
-          <span className="hero-badge">
-            <Book size={12} />
-            Torrent Engineering Specification
-          </span>
           <h1 id="the-what">Torrent Distributed Engine</h1>
           <p className="docs-lead">
             A production-grade, highly resilient distributed job execution engine engineered to process millions of critical background tasks with microsecond precision, guaranteed at-least-once delivery, and zero single points of failure.
