@@ -592,10 +592,6 @@ function App() {
       <div className="app-container">
         {/* Hero */}
         <header className="hero reveal-on-scroll">
-          <span className="hero-badge">
-            <Zap size={12} />
-            Live Simulation Dashboard
-          </span>
           <h1>Torrent Distributed Engine</h1>
           <p>
             Real-time visualization of a highly scalable, event-driven job execution engine.
