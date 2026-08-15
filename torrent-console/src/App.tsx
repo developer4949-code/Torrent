@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Activity, ListTree, Settings, KeySquare, LogOut, Sparkles } from 'lucide-react';
+import { Activity, ListTree, Settings, LogOut, Sparkles, Book } from 'lucide-react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import JobExplorer from './pages/JobExplorer';
 import SettingsPage from './pages/Settings';
+import { ProjectDocumentation } from './pages/ProjectDocumentation';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('torrent_api_key');
@@ -50,6 +51,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             <ListTree size={20} /> Job Explorer
           </button>
           <button 
+            className={`btn nav-link ${location.pathname === '/docs' ? 'active' : ''}`}
+            onClick={() => navigate('/docs')}
+            style={{ width: '100%', justifyContent: 'flex-start', background: location.pathname === '/docs' ? '' : 'transparent', border: 'none' }}
+          >
+            <Book size={20} /> Documentation
+          </button>
+          <button 
             className={`btn nav-link ${location.pathname === '/settings' ? 'active' : ''}`}
             onClick={() => navigate('/settings')}
             style={{ width: '100%', justifyContent: 'flex-start', background: location.pathname === '/settings' ? '' : 'transparent', border: 'none' }}
@@ -89,6 +97,11 @@ export default function App() {
         <Route path="/settings" element={
           <ProtectedRoute>
             <AppLayout><SettingsPage /></AppLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/docs" element={
+          <ProtectedRoute>
+            <AppLayout><ProjectDocumentation /></AppLayout>
           </ProtectedRoute>
         } />
       </Routes>
