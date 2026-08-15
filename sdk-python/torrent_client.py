@@ -55,5 +55,7 @@ class TorrentClient:
             data["dependencies"] = dependencies
             
         response = requests.post(url, headers=headers, json=data)
+        if response.status_code >= 400:
+            print(f"Error {response.status_code}: {response.text}")
         response.raise_for_status()
         return response.json()

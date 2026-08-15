@@ -71,6 +71,21 @@ function statusEngine() {
   }
 }
 
+function setApiKey(key) {
+  if (!key) {
+    console.error('❌ Please provide an API key. Example: torrent key my_secret_key');
+    process.exit(1);
+  }
+  if (!fs.existsSync(CONFIG_DIR)) {
+    console.log('⬇️  Initializing Torrent configuration directory...');
+    execSync('git clone https://github.com/developer4949-code/Torrent.git .torrent', { cwd: os.homedir(), stdio: 'inherit' });
+  }
+  const envPath = path.join(CONFIG_DIR, '.env');
+  fs.writeFileSync(envPath, `TORRENT_API_KEY=${key}\n`);
+  console.log(`✅ API Key successfully set to: ${key}`);
+  console.log('💡 Run `torrent start` to apply the new key.');
+}
+
 // Main CLI logic
 switch (COMMAND) {
   case 'start':
@@ -85,6 +100,9 @@ switch (COMMAND) {
   case 'ps':
     statusEngine();
     break;
+  case 'key':
+    setApiKey(ARGS[1]);
+    break;
   default:
     console.log(`
 🌪️  Torrent Distributed Job Engine
@@ -93,6 +111,7 @@ Usage:
   torrent start     - Start the entire engine (Backend, DB, Kafka, Console, UI)
   torrent stop      - Stop the engine
   torrent status    - Check the status of running containers
+  torrent key <key> - Set the Master API Key for the cluster
     `);
     break;
 }
