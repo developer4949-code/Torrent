@@ -47,7 +47,7 @@ public class JobExecutor {
                 current.setStatus(JobStatus.COMPLETED);
                 current.setCompletedAt(OffsetDateTime.now());
                 jobRepository.save(current);
-                logger.log("WORKER", "Successfully executed Job " + job.getId() + " (" + job.getJobType() + ")");
+                logger.log("WORKER", "Successfully executed Job " + job.getId() + " (" + job.getJobType() + ") on node " + job.getWorkerId());
                 
                 fireWebhook(current);
                 
@@ -88,7 +88,7 @@ public class JobExecutor {
                     current.setStatus(JobStatus.DEAD);
                     current.setCompletedAt(OffsetDateTime.now());
                     current.setErrorMessage(e.getMessage());
-                    logger.log("WORKER", "Job " + job.getId() + " failed permanently! Max attempts reached.");
+                    logger.log("WORKER", "Job " + job.getId() + " failed permanently on node " + job.getWorkerId() + "! Max attempts reached.");
                     jobRepository.save(current);
                     fireWebhook(current);
                 }

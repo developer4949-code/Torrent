@@ -26,4 +26,8 @@ public class WorkerHeartbeat {
     public void ping() {
         redisTemplate.opsForValue().set(workerId, "alive", 10, TimeUnit.SECONDS);
     }
+
+    public String getWorkerId() {
+        return workerId;
+    }
 }

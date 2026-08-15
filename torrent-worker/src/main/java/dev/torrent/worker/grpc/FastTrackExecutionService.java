@@ -6,6 +6,7 @@ import dev.torrent.grpc.JobExecutionRequest;
 import dev.torrent.grpc.JobExecutionResponse;
 import dev.torrent.grpc.JobExecutionServiceGrpc;
 import dev.torrent.worker.executor.JobExecutor;
+import dev.torrent.worker.heartbeat.WorkerHeartbeat;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
@@ -23,11 +24,13 @@ public class FastTrackExecutionService extends JobExecutionServiceGrpc.JobExecut
     private final JobRepository jobRepository;
     private final JobExecutor jobExecutor;
     private final ClusterLogger logger;
+    private final WorkerHeartbeat workerHeartbeat;
 
-    public FastTrackExecutionService(JobRepository jobRepository, JobExecutor jobExecutor, ClusterLogger logger) {
+    public FastTrackExecutionService(JobRepository jobRepository, JobExecutor jobExecutor, ClusterLogger logger, WorkerHeartbeat workerHeartbeat) {
         this.jobRepository = jobRepository;
         this.jobExecutor = jobExecutor;
         this.logger = logger;
+        this.workerHeartbeat = workerHeartbeat;
     }
 
     @Override
@@ -39,7 +42,9 @@ public class FastTrackExecutionService extends JobExecutionServiceGrpc.JobExecut
             Optional<Job> optionalJob = jobRepository.findById(jobId);
             if (optionalJob.isPresent()) {
                 Job job = optionalJob.get();
-                logger.log("gRPC", "Consumed Job " + job.getId() + " via Fast-Track Stream");
+                job.setWorkerId(workerHeartbeat.getWorkerId());
+                jobRepository.save(job);
+                logger.log("gRPC", "Consumed Job " + job.getId() + " via Fast-Track Stream by " + workerHeartbeat.getWorkerId());
                 jobExecutor.execute(job);
                 
                 responseObserver.onNext(JobExecutionResponse.newBuilder()
