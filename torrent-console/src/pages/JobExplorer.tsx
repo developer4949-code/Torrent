@@ -24,6 +24,11 @@ export default function JobExplorer() {
       const res = await fetch(`${import.meta.env.VITE_API_URL_BASE || 'http://localhost:8080'}/api/v1/admin/jobs?size=100`, {
         headers: { 'Authorization': `Bearer ${key}` }
       });
+      if (res.status === 401) {
+        localStorage.removeItem('torrent_api_key');
+        window.location.href = '/login';
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setJobs(data.content);

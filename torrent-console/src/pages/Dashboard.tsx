@@ -17,6 +17,11 @@ export default function Dashboard() {
         const res = await fetch(`${import.meta.env.VITE_API_URL_BASE || 'http://localhost:8080'}/api/v1/admin/jobs/analytics/overview`, {
           headers: { 'Authorization': `Bearer ${key}` }
         });
+        if (res.status === 401) {
+          localStorage.removeItem('torrent_api_key');
+          window.location.href = '/login';
+          return;
+        }
         if (res.ok) setOverview(await res.json());
       } catch (err) {
         console.error(err);
