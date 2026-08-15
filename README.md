@@ -68,8 +68,7 @@ graph TD
 ### 1. Install the Torrent CLI
 Torrent ships with a powerful Global CLI for managing your local cluster development experience.
 ```bash
-cd torrent-cli
-npm install -g .
+npm install -g @developer_4949/torrent-engine
 ```
 
 ### 2. Configure Your Cluster Security
