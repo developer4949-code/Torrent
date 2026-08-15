@@ -18,9 +18,9 @@ export function ProjectDocumentation() {
             <a href="#grpc-fast-track" className="docs-nav-item">gRPC Fast-Track</a>
           </div>
           <div className="docs-nav-section">
-            <div className="docs-nav-title">III. Resiliency & Scale</div>
             <a href="#fault-tolerance" className="docs-nav-item">Fault Tolerance & Recovery</a>
             <a href="#horizontal-scaling" className="docs-nav-item">Horizontal Scaling</a>
+            <a href="#roadmap" className="docs-nav-item" style={{ color: 'var(--accent-color, #3b82f6)', fontWeight: 'bold' }}>Roadmap (WIP)</a>
           </div>
           <div className="docs-nav-section">
             <div className="docs-nav-title">IV. Developer Guide</div>
@@ -142,6 +142,16 @@ export function ProjectDocumentation() {
             <li><strong>Scale Worker Nodes:</strong> When the CPU/Memory intensive execution backlog grows (Kafka Lag metric increases).</li>
             <li><strong>Scale Scheduler Nodes:</strong> Active-Passive high availability. Only one Scheduler holds the ShedLock token at any given millisecond.</li>
           </ul>
+        </section>
+
+        <section id="roadmap" className="docs-section">
+          <h2><GitBranch size={20} /> Roadmap: Multi-Node Distribution (WIP)</h2>
+          <div style={{ background: 'rgba(59, 130, 246, 0.1)', borderLeft: '4px solid #3b82f6', padding: '16px', margin: '16px 0', borderRadius: '4px' }}>
+            <strong>🚀 Work in Progress:</strong> The Torrent Engine is fully functional and production-ready for standard background processing. However, true dynamic <strong>multi-node worker distribution</strong> (assigning execution across a distributed fleet of physical worker nodes) is actively being built right now on our Open Source roadmap!
+          </div>
+          <p>
+            You may notice that jobs in the Job Inspector show the Worker Node as "Unassigned". This is because the dynamic node-registry handshake and fleet-management routing algorithm are currently in active development. Stay tuned for full multi-node clustering capabilities!
+          </p>
         </section>
 
         <section id="api-reference" className="docs-section">
