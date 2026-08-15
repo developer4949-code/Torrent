@@ -20,7 +20,7 @@ export function ProjectDocumentation() {
           <div className="docs-nav-section">
             <a href="#fault-tolerance" className="docs-nav-item">Fault Tolerance & Recovery</a>
             <a href="#horizontal-scaling" className="docs-nav-item">Horizontal Scaling</a>
-            <a href="#roadmap" className="docs-nav-item" style={{ color: 'var(--accent-color, #3b82f6)', fontWeight: 'bold' }}>Roadmap (WIP)</a>
+            <a href="#fleet-tracking" className="docs-nav-item" style={{ color: 'var(--accent-color, #3b82f6)', fontWeight: 'bold' }}>Dynamic Fleet Tracking</a>
           </div>
           <div className="docs-nav-section">
             <div className="docs-nav-title">IV. Developer Guide</div>
@@ -144,13 +144,16 @@ export function ProjectDocumentation() {
           </ul>
         </section>
 
-        <section id="roadmap" className="docs-section">
-          <h2><GitBranch size={20} /> Roadmap: Multi-Node Distribution (WIP)</h2>
+        <section id="fleet-tracking" className="docs-section">
+          <h2><GitBranch size={20} /> Dynamic Fleet Tracking</h2>
           <div style={{ background: 'rgba(59, 130, 246, 0.1)', borderLeft: '4px solid #3b82f6', padding: '16px', margin: '16px 0', borderRadius: '4px' }}>
-            <strong>🚀 Work in Progress:</strong> The Torrent Engine is fully functional and production-ready for standard background processing. However, true dynamic <strong>multi-node worker distribution</strong> (assigning execution across a distributed fleet of physical worker nodes) is actively being built right now on our Open Source roadmap!
+            <strong>🚀 Feature Complete:</strong> The Torrent Engine features true dynamic <strong>multi-node worker distribution tracking</strong>!
           </div>
           <p>
-            You may notice that jobs in the Job Inspector show the Worker Node as "Unassigned". This is because the dynamic node-registry handshake and fleet-management routing algorithm are currently in active development. Stay tuned for full multi-node clustering capabilities!
+            When a worker node spins up in the cluster, it generates a highly unique cryptographic signature (e.g. <code>worker:6f3a4b...</code>) via its internal Heartbeat Service. Whenever it consumes a job from Kafka or the gRPC Fast-Track tunnel, it explicitly stamps its node signature onto the execution context and persists it to the PostgreSQL core. 
+          </p>
+          <p>
+            This gives you 100% observability in the Developer Console to pinpoint exactly which physical machine executed which job—crucial for hunting down memory leaks or hardware failures in massive fleets.
           </p>
         </section>
 

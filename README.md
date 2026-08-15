@@ -14,7 +14,7 @@
 ## 📖 Overview
 **Torrent** is an enterprise-grade, distributed job execution engine designed to handle hundreds of thousands of asynchronous tasks with absolute fault tolerance. Built entirely on a **Microservices Architecture**, Torrent uses event-streaming and remote procedure calls to rapidly distribute background tasks across a cluster of resilient worker nodes.
 
-This project comes equipped with a **real-time React simulation dashboard**, allowing you to visualize jobs flowing through the system's infrastructure dynamically.
+This project comes equipped with a **real-time React Developer Console** and **Simulation Dashboard**, allowing you to visualize jobs flowing through the system's infrastructure dynamically, manage your cluster, and debug worker nodes in real-time.
 
 ---
 
@@ -50,56 +50,69 @@ graph TD
 
 ---
 
-## 💻 Tech Stack & Design Choices
-
-| Technology | Role | Justification |
-| :--- | :--- | :--- |
-| **Java 21 & Spring Boot** | Core Framework | Industry standard for enterprise microservices. Provides rapid dependency injection and robust security features out of the box. |
-| **Apache Kafka** | Event Streaming | Unmatched throughput. Guarantees message persistence and decoupled producer-consumer architecture, meaning workers can scale horizontally without affecting the API gateway. |
-| **gRPC & Protocol Buffers** | High-Priority Fast-Track | Significantly faster than REST over HTTP/2. By bypassing the Kafka queue for `HIGH` priority jobs, we achieve near-instantaneous execution. |
-| **ShedLock + Zookeeper** | Distributed Cron Locking | When scaling out to multiple identical API nodes, ShedLock uses a centralized lock to ensure cron schedules fire exactly once across the cluster. |
-| **PostgreSQL** | Relational Persistence | Ensures ACID compliance when updating complex job execution states (`PENDING`, `SCHEDULED`, `COMPLETED`, `FAILED`). |
-| **React + Vite** | Simulation Dashboard | A high-performance frontend for visualizing system health, built with a glassmorphism design system to impress stakeholders. |
-
----
-
-## ⚙️ Core Features
+## ⚡ Key Features
+* **Dynamic Fleet Tracking:** Every worker node generates a unique cryptographic heartbeat signature (e.g., `worker:6f3a...`). The central database inherently tracks exactly *which* physical server executed *which* job for unmatched observability.
 * **Resilient Retry Policy:** Configurable exponential backoff modifiers (`maxAttempts`, `backoffMultiplier`) for flaky tasks.
 * **Idempotency Guarantees:** Strict checking on `idempotencyKey` ensures that network partitions do not result in duplicate job executions.
 * **Distributed Cron Scheduling:** Capable of scheduling millions of recurring jobs without collision using Zookeeper-backed ShedLock.
-* **Observability:** Centralized logging architecture across all Spring Boot nodes.
+* **Secure API Keys:** Full decoupling of master API keys managed securely via an external `.env` injection system.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Local Installation & Usage Guide
 
-### 1. Prerequisites
-- Docker & Docker Compose
-- Java 21 (JDK)
-- Node.js (v18+) & NPM
+### Prerequisites
+- **Docker Desktop** (Make sure the Docker daemon is actively running!)
+- **Node.js (v18+) & NPM**
 
-### 2. Bootstrapping the Infrastructure
-Start the backing infrastructure (PostgreSQL, Redis, Kafka, Zookeeper) using Docker:
+### 1. Install the Torrent CLI
+Torrent ships with a powerful Global CLI for managing your local cluster development experience.
 ```bash
-docker-compose -f infra/docker-compose.yml up -d
+cd torrent-cli
+npm install -g .
 ```
 
-### 3. Launch the Microservices
-To compile and launch the Spring Boot cluster (API Gateway, Scheduler, Worker), simply execute the PowerShell runner script from the root directory:
-```powershell
-.\run-torrent.ps1
-```
-*This will perform a clean Maven build and boot up the JVM instances.*
-
-### 4. Launch the Simulation Dashboard
-In a new terminal window, navigate to the UI directory and start Vite:
+### 2. Configure Your Cluster Security
+Before starting the cluster, you must set a Master API Key. This key is securely saved to `~/.torrent/.env` and automatically injected into the backend upon boot.
 ```bash
-cd torrent-ui
-npm install
-npm run dev
+torrent key my_super_secret_key
 ```
 
-Open your browser to [http://localhost:5173](http://localhost:5173) and begin queuing jobs!
+### 3. Start the Engine!
+The CLI handles the orchestration of the entire infrastructure (Zookeeper, Kafka, Redis, PostgreSQL) alongside the Spring Boot microservices and React Dashboards.
+```bash
+torrent start
+```
+*Wait a minute for the Spring Boot JVMs to compile and boot up inside the Docker containers.*
+
+### 4. Access the Dashboards
+Once the system is up and running, open your browser:
+- **Developer Console:** [http://localhost:8081](http://localhost:8081) *(Login using the API key you set in Step 2!)*
+- **Demo UI (Simulation):** [http://localhost:5173](http://localhost:5173)
+
+### 5. Check Status or Shutdown
+```bash
+torrent ps     # View the health of all running Torrent containers
+torrent stop   # Gracefully shut down the entire cluster
+```
+
+---
+
+## ☁️ Cloud Deployment Guide
+
+Ready to take Torrent to production? The entire system is built natively for container orchestrators like Kubernetes or cloud-native platform-as-a-service (PaaS) providers.
+
+### Deploying to Render / AWS ECS / DigitalOcean Apps
+1. **Managed Infrastructure:** Spin up managed versions of PostgreSQL, Redis, and Apache Kafka (e.g., Confluent Cloud or Amazon MSK).
+2. **Environment Variables:** Set the following environment variables in your cloud provider's dashboard:
+   - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`
+   - `SPRING_KAFKA_BOOTSTRAP_SERVERS`
+   - `SPRING_REDIS_HOST`, `SPRING_REDIS_PORT`
+   - `TORRENT_API_KEY` (Your master security key!)
+3. **Backend Deployment:** Deploy the `torrent-backend` Dockerfile as a Web Service.
+4. **Console/UI Deployment:** Deploy the `torrent-console` and `torrent-ui` React applications as Static Sites, pointing `VITE_API_URL_BASE` to your backend's public URL.
+
+*(Note: For the absolute highest performance, ensure your API Gateway and Worker Nodes are deployed in the same VPC/Region to minimize gRPC latency!)*
 
 ---
 
