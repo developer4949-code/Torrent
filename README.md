@@ -97,6 +97,62 @@ torrent stop   # Gracefully shut down the entire cluster
 
 ---
 
+## 🛠️ Developer Integration Guide
+
+Integrating Torrent into your daily Microservices, Web Apps, or Data Pipelines is incredibly simple. All you need is the Master API Key and an HTTP client!
+
+### Python Integration
+Just set your `.env` and use the provided `torrent_client.py` SDK!
+
+```python
+import os
+from torrent_client import TorrentClient
+
+# 1. Initialize the client with your secure cluster key
+torrent = TorrentClient(
+    api_key=os.getenv("TORRENT_API_KEY", "your_secret_key"),
+    base_url="http://localhost:8080"
+)
+
+# 2. Offload a heavy background task instantly!
+job = torrent.submit_job(
+    job_type="PROCESS_S3_FILE",
+    payload={"bucket": "user-uploads", "file": "video.mp4"},
+    priority="HIGH", # Use gRPC Fast-Track!
+    cron_expression="* * * * *" 
+)
+
+print(f"Successfully offloaded to Torrent! Job ID: {job['id']}")
+```
+
+### Java / Spring Boot Integration
+Since Torrent is entirely language-agnostic via its REST Gateway, you can trigger jobs from any Java backend using standard `HttpClient` or `RestTemplate`!
+
+```java
+HttpClient client = HttpClient.newHttpClient();
+
+String jsonPayload = """
+    {
+        "jobType": "SEND_WELCOME_EMAIL",
+        "priority": "STANDARD",
+        "payload": { "userId": "12345", "email": "user@example.com" },
+        "idempotencyKey": "email-signup-12345"
+    }
+    """;
+
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("http://localhost:8080/api/v1/jobs"))
+    .header("Authorization", "Bearer your_secret_key")
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+    .build();
+
+// Fire and forget! Let Torrent handle the retries and fault tolerance.
+client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+```
+
+---
+
 ## ☁️ Cloud Deployment Guide
 
 Ready to take Torrent to production? The entire system is built natively for container orchestrators like Kubernetes or cloud-native platform-as-a-service (PaaS) providers.
