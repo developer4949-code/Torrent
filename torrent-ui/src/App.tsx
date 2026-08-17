@@ -1247,8 +1247,21 @@ function App() {
               <button className="close-btn" onClick={() => setShowSettings(false)}><X size={20} /></button>
             </header>
             <div className="modal-body">
+              <div className="form-group" style={{ marginBottom: 16 }}>
+                <label className="form-label">Torrent Master API Key</label>
+                <input 
+                  type="password" 
+                  className="form-input" 
+                  value={torrentApiKey}
+                  onChange={(e) => {
+                    setTorrentApiKey(e.target.value);
+                    localStorage.setItem('torrentApiKey', e.target.value);
+                  }}
+                  placeholder="Enter your cluster key..."
+                />
+              </div>
               <div className="form-group">
-                <label className="form-label">Groq API Key (For AI Debugger)</label>
+                <label className="form-label">OpenRouter API Key (For AI Debugger)</label>
                 <input 
                   type="password" 
                   className="form-input" 
@@ -1257,7 +1270,7 @@ function App() {
                     setGroqApiKey(e.target.value);
                     localStorage.setItem('groqApiKey', e.target.value);
                   }}
-                  placeholder="gsk_..."
+                  placeholder="sk-or-v1-..."
                 />
                 <p className="form-hint" style={{marginTop: 8}}>Your key is stored locally in your browser.</p>
               </div>
