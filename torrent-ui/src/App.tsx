@@ -1252,6 +1252,8 @@ function App() {
                 <input 
                   type="password" 
                   className="form-input" 
+                  autoComplete="new-password"
+                  spellCheck="false"
                   value={torrentApiKey}
                   onChange={(e) => {
                     setTorrentApiKey(e.target.value);
@@ -1265,6 +1267,8 @@ function App() {
                 <input 
                   type="password" 
                   className="form-input" 
+                  autoComplete="new-password"
+                  spellCheck="false"
                   value={groqApiKey}
                   onChange={(e) => {
                     setGroqApiKey(e.target.value);
