@@ -29,14 +29,14 @@ Priority: ${job.priority}
 
 Please provide a short, concise, and helpful diagnosis of why this failed and how the developer can fix it.`;
 
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${groqApiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'openai/gpt-oss-120b',
+          model: 'llama-3.3-70b-versatile',
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.5,
           max_tokens: 300
@@ -45,7 +45,7 @@ Please provide a short, concise, and helpful diagnosis of why this failed and ho
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(`OpenRouter API error ${response.status}: ${errText}`);
+        throw new Error(`Groq API error ${response.status}: ${errText}`);
       }
 
       const data = await response.json();
@@ -122,7 +122,7 @@ Please provide a short, concise, and helpful diagnosis of why this failed and ho
                 {!aiAnalysis ? (
                   <button className="btn btn-primary btn-ai" onClick={handleAnalyze} disabled={isAnalyzing}>
                     {isAnalyzing ? <Loader2 size={16} className="spin" /> : <Sparkles size={16} />}
-                    {isAnalyzing ? 'Analyzing...' : 'Analyze with OpenRouter AI'}
+                    {isAnalyzing ? 'Analyzing...' : 'Analyze with Groq AI'}
                   </button>
                 ) : (
                   <div className="ai-result">

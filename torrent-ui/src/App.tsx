@@ -1261,7 +1261,7 @@ function App() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">OpenRouter API Key (For AI Debugger)</label>
+                <label className="form-label">Groq API Key (For AI Debugger)</label>
                 <input 
                   type="password" 
                   className="form-input" 
@@ -1270,7 +1270,7 @@ function App() {
                     setGroqApiKey(e.target.value);
                     localStorage.setItem('groqApiKey', e.target.value);
                   }}
-                  placeholder="sk-or-v1-..."
+                  placeholder="gsk_..."
                 />
                 <p className="form-hint" style={{marginTop: 8}}>Your key is stored locally in your browser.</p>
               </div>
