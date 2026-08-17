@@ -36,7 +36,7 @@ Please provide a short, concise, and helpful diagnosis of why this failed and ho
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model: 'openai/gpt-oss-120b',
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.5,
           max_tokens: 300
