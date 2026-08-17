@@ -61,7 +61,7 @@ Payload: ${job.payload}
 Error: ${job.errorMessage}
 Please explain what might have caused this and how to fix it briefly.`;
 
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${groqKey}`,
@@ -77,10 +77,10 @@ Please explain what might have caused this and how to fix it briefly.`;
         const data = await res.json();
         setAiDiagnosis(data.choices[0].message.content);
       } else {
-        setAiDiagnosis(`Groq Error: ${res.statusText}`);
+        setAiDiagnosis(`OpenRouter Error: ${res.statusText}`);
       }
     } catch (err) {
-      setAiDiagnosis("Failed to reach Groq API.");
+      setAiDiagnosis("Failed to reach OpenRouter API.");
     } finally {
       setIsDiagnosing(false);
     }
@@ -170,7 +170,7 @@ Please explain what might have caused this and how to fix it briefly.`;
                     <RotateCcw size={16} /> Force Retry
                   </button>
                   <button className="btn btn-primary" onClick={() => handleDiagnose(selectedJob)} disabled={isDiagnosing}>
-                    <Bot size={16} /> {isDiagnosing ? 'Analyzing Stack Trace...' : 'Analyze with Groq LLaMA-3'}
+                    <Bot size={16} /> {isDiagnosing ? 'Analyzing Stack Trace...' : 'Analyze with OpenRouter AI'}
                   </button>
                 </div>
                 

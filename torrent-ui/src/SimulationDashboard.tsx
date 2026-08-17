@@ -227,8 +227,8 @@ function App() {
   const fetchJobs = useCallback(async (): Promise<boolean> => {
     try {
       const [jobsRes, metricsRes] = await Promise.all([
-        fetch(`${API_URL}?_t=${Date.now()}`, { headers: { 'Authorization': 'Bearer torrent_secret_123' } }),
-        fetch(`${import.meta.env.VITE_API_URL_BASE || 'http://localhost:8080'}/api/cluster/metrics`, { headers: { 'Authorization': 'Bearer torrent_secret_123' } }).catch(() => null)
+        fetch(`${API_URL}?_t=${Date.now()}`, { headers: { 'Authorization': `Bearer ${torrentApiKey}` } }),
+        fetch(`${import.meta.env.VITE_API_URL_BASE || 'http://localhost:8080'}/api/cluster/metrics`, { headers: { 'Authorization': `Bearer ${torrentApiKey}` } }).catch(() => null)
       ]);
       
       if (jobsRes.ok) {
@@ -482,7 +482,7 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer torrent_secret_123',
+          'Authorization': `Bearer ${torrentApiKey}`,
         },
         body: JSON.stringify({
             ...rest,
